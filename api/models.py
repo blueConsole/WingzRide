@@ -1,14 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
-class User(models.Model):
+class User(AbstractUser):
     id_user = models.AutoField(primary_key=True)
     role = models.CharField(max_length=20, choices=[('rider', 'Rider'), ('driver', 'Driver'), ('admin', 'Admin')])
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
-    email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20)
-
+    email = models.EmailField(unique=True)
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 

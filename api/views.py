@@ -4,15 +4,16 @@ from .models import User, Ride, RideEvent
 from .serializers import UserSerializer, RideSerializer, RideEventSerializer
 from django.db.models import ExpressionWrapper, F, FloatField, Value
 from django.db.models.functions import Sqrt
-
+from .permissions import IsAdmin
 # Create your views here.
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAdmin]
 
 class RideViewSet(ModelViewSet):
     serializer_class = RideSerializer
-
+    permission_classes = [IsAdmin]  
     def get_queryset(self):
         queryset = Ride.objects.all()
         status = self.request.query_params.get('status', None)
@@ -51,3 +52,4 @@ class RideViewSet(ModelViewSet):
 class RideEventViewSet(ModelViewSet):
     queryset = RideEvent.objects.all()
     serializer_class = RideEventSerializer
+    permission_classes = [IsAdmin]
