@@ -2,7 +2,9 @@ from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from .models import User, Ride, RideEvent
 from .serializers import UserSerializer, RideSerializer, RideEventSerializer
-from django.db.models import ExpressionWrapper, F, FloatField, Value
+from django.db.models import ExpressionWrapper, F, FloatField, Value, Prefetch
+from django.utils import timezone
+from datetime import timedelta
 from django.db.models.functions import Sqrt
 from .permissions import IsAdmin
 # Create your views here.
@@ -15,7 +17,11 @@ class RideViewSet(ModelViewSet):
     serializer_class = RideSerializer
     permission_classes = [IsAdmin]  
     def get_queryset(self):
-        queryset = Ride.objects.all()
+        today = timezone.now() - timedelta(hours=24)
+        todays_events = RideEvent.objects.filter(created_at__gte=today)
+        queryset = Ride.objects.select_related('id_rider', 'id_driver').prefetch_related(
+            Prefetch('events', queryset=todays_events, to_attr='todays_events')
+        )
         status = self.request.query_params.get('status', None)
         if status is not None:
             queryset = queryset.filter(status=status)
@@ -47,6 +53,8 @@ class RideViewSet(ModelViewSet):
                         output_field=FloatField()
                     )
                 ).order_by('distance')
+        else:
+            queryset = queryset.order_by('id_ride')
         return queryset
 
 class RideEventViewSet(ModelViewSet):

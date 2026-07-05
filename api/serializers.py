@@ -25,12 +25,14 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class RideSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ride
-        fields = ['id_ride', 'status', 'id_rider', 'id_driver', 'pickup_latitude', 'pickup_longitude', 'dropoff_latitude', 'dropoff_longitude', 'pickup_time']
-
 class RideEventSerializer(serializers.ModelSerializer):
     class Meta:
         model = RideEvent
         fields = ['id_ride_event', 'id_ride', 'description', 'created_at']
+
+class RideSerializer(serializers.ModelSerializer):
+    todays_ride_events = RideEventSerializer(source='todays_events', many=True, read_only=True)
+
+    class Meta:
+        model = Ride
+        fields = ['id_ride', 'status', 'id_rider', 'id_driver', 'pickup_latitude', 'pickup_longitude', 'dropoff_latitude', 'dropoff_longitude', 'pickup_time', 'todays_ride_events']
