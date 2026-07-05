@@ -4,7 +4,7 @@ from .views import UserViewSet, RideViewSet, RideEventViewSet
 
 router = DefaultRouter()
 router.register('users', UserViewSet)
-router.register('rides', RideViewSet)
+router.register('rides', RideViewSet, basename='ride')
 router.register('ride-events', RideEventViewSet)
 
 app_name = 'api'

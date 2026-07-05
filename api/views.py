@@ -9,8 +9,20 @@ class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
 
 class RideViewSet(ModelViewSet):
-    queryset = Ride.objects.all()
     serializer_class = RideSerializer
+
+    def get_queryset(self):
+        queryset = Ride.objects.all()
+        status = self.request.query_params.get('status', None)
+        if status is not None:
+            queryset = queryset.filter(status=status)
+        rider_email = self.request.query_params.get('rider_email', None)
+        if rider_email is not None:
+            queryset = queryset.filter(id_rider__email=rider_email)   
+        ordering = self.request.query_params.get('ordering', None)
+        if ordering in ['pickup_time', '-pickup_time']:
+            queryset = queryset.order_by(ordering)
+        return queryset
 
 class RideEventViewSet(ModelViewSet):
     queryset = RideEvent.objects.all()
