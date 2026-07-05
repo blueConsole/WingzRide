@@ -1,8 +1,13 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import UserViewSet, RideViewSet, RideEventViewSet
 
+router = DefaultRouter()
+router.register('users', UserViewSet)
+router.register('rides', RideViewSet)
+router.register('ride-events', RideEventViewSet)
+
+app_name = 'api'
 urlpatterns = [
-    path('users/', UserViewSet.as_view({'get': 'list', 'post': 'create'}), name='user-list'),
-    path('rides/', RideViewSet.as_view({'get': 'list', 'post': 'create'}), name='ride-list'),
-    path('ride-events/', RideEventViewSet.as_view({'get': 'list', 'post': 'create'}), name='ride-event-list'),
+    path('', include(router.urls)),
 ]
